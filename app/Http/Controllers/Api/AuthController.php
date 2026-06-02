@@ -24,6 +24,9 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        // 👉 ASSIGN ROLE (IMPORTANT)
+        $user->assignRole('user');
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
