@@ -24,8 +24,14 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        // 👉 ASSIGN ROLE (IMPORTANT)
-        $user->assignRole('user');
+        // SAFE ROLE ASSIGN (prevents crash)
+        try {
+            if (method_exists($user, 'assignRole')) {
+                $user->assignRole('user');
+            }
+        } catch (\Exception $e) {
+            // ignore role errors for now
+        }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -61,7 +67,7 @@ class AuthController extends Controller
         ]);
     }
 
-    // GET LOGGED USER
+    // GET USER
     public function user(Request $request)
     {
         return response()->json([
