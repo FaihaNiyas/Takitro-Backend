@@ -39,7 +39,7 @@ class Kernel extends HttpKernel
     ];
 
     /**
-     * Route middleware aliases (IMPORTANT FOR ROLE SYSTEM)
+     * Route middleware aliases
      */
     protected $middlewareAliases = [
         'auth' => \App\Http\Middleware\Authenticate::class,

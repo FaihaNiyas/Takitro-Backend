@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
@@ -24,13 +25,11 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        // SAFE ROLE ASSIGN (prevents crash)
-        try {
-            if (method_exists($user, 'assignRole')) {
-                $user->assignRole('user');
-            }
-        } catch (\Exception $e) {
-            // ignore role errors for now
+        // Assign default role (safe)
+        $role = Role::where('name', 'user')->first();
+
+        if ($role) {
+            $user->assignRole('user');
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
