@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
@@ -25,19 +24,16 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        // Assign default role (safe)
-        $role = Role::where('name', 'user')->first();
-
-        if ($role) {
-            $user->assignRole('user');
-        }
+        // assign default role
+        $user->assignRole('user');
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'message' => 'User registered successfully',
             'user' => $user,
-            'token' => $token
+            'token' => $token,
+            'roles' => $user->getRoleNames()
         ]);
     }
 
@@ -62,15 +58,17 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Login successful',
             'user' => $user,
-            'token' => $token
+            'token' => $token,
+            'roles' => $user->getRoleNames()
         ]);
     }
 
-    // GET USER
+    // GET USER (protected route)
     public function user(Request $request)
     {
         return response()->json([
-            'user' => $request->user()
+            'user' => $request->user(),
+            'roles' => $request->user()->getRoleNames()
         ]);
     }
 
